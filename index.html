@@ -1,1 +1,465 @@
-css
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pratiksha M. Shete — DevOps · Cloud · CI/CD</title>
+
+<!-- Fonts & icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css"/>
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+
+<style>
+/* ---------- THEME & TYPOGRAPHY ---------- */
+:root{
+  --text:#eef6ff;
+  --muted:#b7c7d5;
+  --accent:#8fd6ff;
+  --accent-2:#c78aff;
+  --card-bg: rgba(255,255,255,0.04);
+  --card-strong: rgba(255,255,255,0.07);
+  --glass-border: rgba(255,255,255,0.06);
+  --maxw:1200px;
+  --radius:14px;
+  --shadow: 0 12px 40px rgba(0,0,0,0.36);
+}
+
+/* base */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0}
+body{
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+  color:var(--text);
+  /* three-color base gradient (bluish → teal → lavender) */
+  background: linear-gradient(90deg, #3f6faa 0%, #31a8bd 50%, #9c7dd1 100%);
+  overflow-y:scroll;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  position:relative;
+  transition: background 1s ease;
+}
+
+/* animated subtle gradient shift */
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background: linear-gradient(90deg, #0f2540 0%, #0f5f6e 50%, #5b3f8a 100%);
+  filter: saturate(105%) blur(12px) contrast(1.02);
+  transform: scale(1.02);
+  animation: gradientShift 18s linear infinite;
+  opacity:0.98;
+}
+@keyframes gradientShift{
+  0%{ background-position:0% 50% }
+  50%{ background-position:100% 50% }
+  100%{ background-position:0% 50% }
+}
+body::before{ background-size:200% 200%; }
+
+/* canvas layers */
+canvas#particleCanvas{ position:fixed; inset:0; z-index:0; pointer-events:none; }
+canvas#meshCanvas{ position:fixed; inset:0; z-index:0.9; pointer-events:none; }
+
+/* content wrapper */
+.container{ position:relative; z-index:5; max-width:var(--maxw); margin:110px auto; padding:40px; }
+
+/* header */
+.header {
+  position:fixed; left:0; right:0; top:18px; z-index:12; margin:0 auto; max-width:var(--maxw);
+  display:flex; justify-content:space-between; align-items:center; padding:12px 18px; border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.04); backdrop-filter: blur(6px); transition: all .22s ease;
+}
+.header.solid{ background: rgba(7,12,18,0.96); box-shadow: 0 18px 60px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.02); }
+.brand{ display:flex; gap:12px; align-items:center; }
+.logo{ width:54px; height:54px; border-radius:12px; display:grid; place-items:center; font-weight:800; color:var(--accent); background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); }
+nav.primary{ display:flex; gap:10px; align-items:center; }
+nav.primary a{ color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:10px; font-weight:600; transition:.16s; }
+nav.primary a:hover{ color:var(--text); transform:translateY(-3px) }
+
+/* hero */
+.hero{ display:grid; grid-template-columns:220px 1fr; gap:32px; align-items:center; margin-bottom:28px; }
+.profile-card{ border-radius:16px; padding:14px; background:var(--card-bg); border:1px solid var(--glass-border); box-shadow:var(--shadow); display:flex; flex-direction:column; gap:12px; align-items:center; }
+.profile-photo{ width:200px; height:200px; border-radius:12px; overflow:hidden; border:4px solid rgba(255,255,255,0.05); display:grid; place-items:center; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+.profile-photo img{ width:100%; height:100%; object-fit:cover; display:block; border-radius:10px; }
+
+.hero-content h1{ margin:0; font-size:30px; line-height:1.05; }
+.hero-content .role{ color:var(--accent); font-weight:700; margin-top:6px; }
+.hero-content p{ color:var(--muted); margin-top:12px; line-height:1.75; font-size:15px; }
+
+/* actions */
+.actions{ margin-top:16px; display:flex; gap:12px; flex-wrap:wrap; }
+.btn{ display:inline-flex; gap:10px; align-items:center; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:700; color:var(--text); background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); }
+.btn.primary{ background: linear-gradient(90deg, var(--accent), var(--accent-2)); color:#04121a; box-shadow:0 10px 30px rgba(143,214,255,0.06); }
+
+/* sections */
+.section{ background:var(--card-bg); border:1px solid var(--glass-border); border-radius:14px; padding:28px; margin-bottom:28px; box-shadow:var(--shadow); }
+.section-title{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.section-title h2{ margin:0; color:var(--accent); font-size:20px; }
+.section-sub{ color:var(--muted); font-size:13px; }
+
+/* skills */
+.skills-grid{ display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+.skill-pill{ display:inline-flex; gap:10px; align-items:center; padding:10px 12px; border-radius:12px; background: rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02); font-weight:700; color:var(--text); }
+.skill-pill i{ font-size:20px; }
+
+/* skill rows */
+.skill-row{ display:flex; gap:14px; align-items:center; margin-top:12px; }
+.skill-name{ width:180px; color:var(--muted); font-weight:700; }
+.bar{ flex:1; height:14px; background: rgba(255,255,255,0.03); border-radius:999px; overflow:hidden; border:1px solid rgba(255,255,255,0.02); }
+.bar > i{ display:block; height:100%; width:0%; background: linear-gradient(90deg,#78dcff,#c78aff); transition: width 900ms cubic-bezier(.2,.9,.2,1); }
+
+/* projects */
+.projects-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+.project{ padding:14px; border-radius:12px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02); }
+
+/* timeline */
+.timeline{ border-left:2px dashed rgba(255,255,255,0.03); padding-left:16px; }
+.tl-item{ margin-bottom:18px; }
+
+/* education & certs */
+.edu-item{ margin-bottom:12px; color:var(--muted); line-height:1.6; }
+.certs{ display:flex; flex-direction:column; gap:8px; color:var(--muted); }
+
+/* contact */
+.contact-grid{ display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+.contact-grid a{ display:inline-flex; gap:10px; align-items:center; text-decoration:none; color:var(--text); background:rgba(255,255,255,0.01); padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); }
+
+/* scroll to top */
+#scrollTopBtn{ position:fixed; right:20px; bottom:22px; z-index:20; width:56px; height:56px; border-radius:999px; display:grid; place-items:center;
+ background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); box-shadow:0 10px 30px rgba(0,0,0,0.45); cursor:pointer; opacity:0; transform:translateY(8px) scale(.9); transition: all .28s; }
+#scrollTopBtn.visible{ opacity:1; transform:translateY(0) scale(1); }
+#scrollTopBtn .ring{ position:absolute; inset:-8px; border-radius:999px; mix-blend-mode:screen; filter:blur(8px); background: conic-gradient(from 90deg, rgba(143,214,255,0.06), rgba(199,138,255,0.04)); animation: pulse 3000ms infinite; }
+@keyframes pulse{ 0%{ transform:scale(.9) } 50%{ transform:scale(1.05) } 100%{ transform:scale(.9) } }
+
+/* responsive */
+@media (max-width:980px){
+  .hero{ grid-template-columns:140px 1fr; gap:18px; }
+  .profile-photo{ width:140px; height:140px; }
+  .container{ margin:80px auto; padding:20px; }
+  nav.primary{ display:none; }
+}
+
+/* focus */
+a:focus{ outline:2px solid rgba(143,214,255,0.12); outline-offset:4px; }
+</style>
+</head>
+<body>
+
+<!-- canvas layers (particle behind mesh, mesh above) -->
+<canvas id="particleCanvas" aria-hidden="true"></canvas>
+<canvas id="meshCanvas" aria-hidden="true"></canvas>
+
+<!-- header -->
+<header class="header" id="siteHeader" role="banner" aria-label="Main header">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">PS</div>
+    <div>
+      <div style="font-weight:800">Pratiksha M. Shete</div>
+      <div style="font-size:13px;color:var(--muted)">DevOps · Cloud Automation · CI/CD</div>
+    </div>
+  </div>
+
+  <nav class="primary" role="navigation" aria-label="Primary navigation">
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Projects</a>
+    <a href="#experience">Experience</a>
+    <a href="#education">Education</a>
+    <a href="#certifications">Certifications</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- main content -->
+<main class="container" role="main">
+
+  <!-- HERO -->
+  <section id="about" class="hero" data-aos="fade-up" data-aos-duration="700">
+    <aside class="profile-card" data-aos="fade-right" data-aos-duration="800">
+      <div class="profile-photo" aria-hidden="false">
+        <!-- Female portrait (Unsplash placeholder) - replace with your own photo if desired -->
+        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=900&q=80&auto=format&fit=crop&ixlib=rb-4.0.3&s=8e7a0b47b3f0b1b2b0c9e7d6a6a11f4a" alt="Profile — female portrait">
+      </div>
+      <div style="text-align:center;color:var(--muted);font-weight:700">MSc (Computer Science)</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <a class="btn" href="mailto:pratikshashete2309@gmail.com" title="Email"><i class="fa-solid fa-envelope"></i></a>
+        <a class="btn" href="tel:+919284340298" title="Call"><i class="fa-solid fa-phone"></i></a>
+        <a class="btn" href="https://www.linkedin.com/in/pratiksha-shete-413785324" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+      </div>
+    </aside>
+
+    <div class="hero-content" data-aos="fade-left" data-aos-duration="800">
+      <h1>Pratiksha M. Shete</h1>
+      <div class="role">DevOps · Cloud · CI/CD Automation</div>
+
+      <!-- Full Objective (from PDF) -->
+      <p style="margin-top:14px">
+        Computer Science postgraduate with strong foundation in cloud computing, DevOps principles and automation.
+        Demonstrated experience during a 6-month internship at Globle SunTech, where I implemented data ingestion pipelines,
+        automated deployments and collaborated on performance improvements. Proficient with Azure, Docker, Jenkins, Terraform,
+        Linux and Git. Seeking roles that let me design scalable CI/CD systems, automate infrastructure, and improve reliability.
+      </p>
+
+      <div class="actions" aria-hidden="false">
+        <a class="btn" href="#projects"><i class="fa-solid fa-folder-open"></i> View Projects</a>
+        <a class="btn" href="#contact"><i class="fa-solid fa-address-card"></i> Contact</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="section" data-aos="fade-up" data-aos-duration="700">
+    <div class="section-title"><h2>Technical Skills</h2><div class="section-sub">Tools, platforms & languages (logos included)</div></div>
+
+    <div class="skills-grid" role="list">
+      <span class="skill-pill" role="listitem"><i class="devicon-azure-plain colored" title="Azure"></i> Microsoft Azure</span>
+      <span class="skill-pill" role="listitem"><i class="devicon-docker-plain colored" title="Docker"></i> Docker</span>
+      <span class="skill-pill" role="listitem"><i class="devicon-jenkins-plain colored" title="Jenkins"></i> Jenkins</span>
+      <span class="skill-pill" role="listitem"><i class="devicon-terraform-plain colored" title="Terraform"></i> Terraform</span>
+      <span class="skill-pill" role="listitem"><i class="devicon-git-plain colored" title="Git"></i> Git / GitHub</span>
+      <span class="skill-pill" role="listitem"><i class="devicon-linux-plain colored" title="Linux"></i> Linux</span>
+      <span class="skill-pill" role="listitem"><i class="devicon-python-plain colored" title="Python"></i> Python</span>
+      <span class="skill-pill" role="listitem"><i class="devicon-postgresql-plain colored" title="SQL"></i> SQL / Databases</span>
+      <span class="skill-pill" role="listitem"><i class="devicon-html5-plain colored" title="HTML5"></i> HTML / CSS / JS</span>
+      <span class="skill-pill" role="listitem"><i class="fa-solid fa-terminal" title="Shell"></i> Shell / Bash</span>
+    </div>
+
+    <div style="margin-top:18px">
+      <div class="skill-row"><div class="skill-name">Docker</div><div class="bar"><i style="width:90%"></i></div></div>
+      <div class="skill-row"><div class="skill-name">Git / GitHub</div><div class="bar"><i style="width:86%"></i></div></div>
+      <div class="skill-row"><div class="skill-name">Azure / Cloud</div><div class="bar"><i style="width:82%"></i></div></div>
+      <div class="skill-row"><div class="skill-name">Jenkins</div><div class="bar"><i style="width:76%"></i></div></div>
+      <div class="skill-row"><div class="skill-name">Terraform</div><div class="bar"><i style="width:74%"></i></div></div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="section" data-aos="fade-up" data-aos-duration="700">
+    <div class="section-title"><h2>Projects & Self-learning</h2><div class="section-sub">Selected work and internship deliverables</div></div>
+
+    <div class="projects-grid" role="list">
+      <article class="project" role="listitem" data-aos="zoom-in" data-aos-duration="720">
+        <h3>CI/CD Pipeline for Web App Deployment</h3>
+        <p style="color:var(--muted)">Designed and implemented a complete CI/CD workflow using Jenkins, GitHub Actions, and Azure DevOps YAML pipelines. Containerized services with Docker and automated deployments to Azure App Services / AKS with health checks and rollback strategies.</p>
+        <p style="color:var(--muted);font-weight:700">Tech: Jenkins · GitHub Actions · Docker · Azure · Bash</p>
+      </article>
+
+      <article class="project" role="listitem" data-aos="zoom-in" data-aos-duration="760">
+        <h3>Infrastructure Automation with Terraform</h3>
+        <p style="color:var(--muted)">Developed reusable Terraform modules to provision Azure resources—Resource Groups, VMs, Storage Accounts—while implementing remote state and automated validation in CI. Reduced manual provisioning time significantly.</p>
+        <p style="color:var(--muted);font-weight:700">Tech: Terraform · Azure CLI</p>
+      </article>
+
+      <article class="project" role="listitem" data-aos="zoom-in" data-aos-duration="800">
+        <h3>Traffic Data Processing App (Internship)</h3>
+        <p style="color:var(--muted)">At Globle SunTech, built Python ETL pipelines to ingest sensor data, clean and aggregate it, and deliver analytics dashboards. These insights informed strategies that reduced simulated congestion by ~10% in tests.</p>
+        <p style="color:var(--muted);font-weight:700">Tech: Python · Pandas · REST APIs · Front-end</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="section" data-aos="fade-up" data-aos-duration="700">
+    <div class="section-title"><h2>Experience</h2><div class="section-sub">Work & internship history</div></div>
+
+    <div class="timeline" role="list">
+      <div class="tl-item" data-aos="fade-right" data-aos-duration="720">
+        <h3>Intern — Globle SunTech, Pune</h3>
+        <div style="color:var(--muted);margin-top:6px"><em>Mar 2023 — Sep 2023</em></div>
+        <ul style="color:var(--muted);margin-top:10px;line-height:1.7;">
+          <li>Developed robust Python applications to collect, analyze and visualize real-time traffic sensor data.</li>
+          <li>Collaborated across teams to refine algorithms and optimize processing performance on large datasets.</li>
+          <li>Built responsive front-end components (HTML/CSS/JS) for dashboards and integrated with backend APIs.</li>
+          <li>Automated ETL steps and integrated pipelines to improve reliability and monitoring.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education" class="section" data-aos="fade-up" data-aos-duration="700">
+    <div class="section-title"><h2>Education</h2><div class="section-sub">Academic background (most recent first)</div></div>
+
+    <div class="edu-item">
+      <strong>MSc. in Computer Science</strong><br>
+      Sangamner College, Sangamner, Maharashtra — <span style="color:var(--muted)">Aug 2021 — Jul 2023</span><br>
+      <span style="color:var(--muted)">CGPA: 8.50 / 10.00</span>
+    </div>
+
+    <div class="edu-item">
+      <strong>BSc. in Computer Science</strong><br>
+      (College name — replace if different) — <span style="color:var(--muted)">Aug 2018 — May 2021</span>
+    </div>
+
+    <div class="edu-item">
+      <strong>HSC (Science)</strong><br>
+      (School name — replace if different) — <span style="color:var(--muted)">2016 — 2018</span>
+    </div>
+
+    <div class="edu-item">
+      <strong>SSC</strong><br>
+      (School name — replace if different) — <span style="color:var(--muted)">2014 — 2016</span>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications" class="section" data-aos="fade-up" data-aos-duration="700">
+    <div class="section-title"><h2>Certifications</h2><div class="section-sub">Professional certificates</div></div>
+    <div class="certs">
+      <div>Microsoft Certified: Azure Fundamentals (AZ-900)</div>
+      <div>Microsoft Certified: Azure Administrator (AZ-104) — In Progress</div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section" data-aos="fade-up" data-aos-duration="700">
+    <div class="section-title"><h2>Contact</h2><div class="section-sub">All links are clickable</div></div>
+
+    <div class="contact-grid" role="list">
+      <a href="mailto:pratikshashete2309@gmail.com" role="listitem"><i class="fa-solid fa-envelope"></i> pratikshashete2309@gmail.com</a>
+      <a href="tel:+919284340298" role="listitem"><i class="fa-solid fa-phone"></i> +91 92843 40298</a>
+      <a href="https://www.linkedin.com/in/pratiksha-shete-413785324" target="_blank" role="listitem"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+      <a href="https://github.com/placeholder" target="_blank" role="listitem"><i class="fa-brands fa-github"></i> GitHub</a>
+      <a href="PratikshaShete-2.pdf" download role="listitem" class="btn primary" style="width:max-content;"><i class="fa-solid fa-file-arrow-down"></i> Download Resume (PDF)</a>
+    </div>
+  </section>
+
+  <footer style="text-align:center;color:var(--muted);margin-top:28px">© 2025 Pratiksha Maccindra Shete — All rights reserved.</footer>
+</main>
+
+<!-- glowing scroll to top -->
+<button id="scrollTopBtn" aria-label="Scroll to top" title="Back to top">
+  <div class="ring" aria-hidden="true"></div>
+  <i class="fa-solid fa-chevron-up" style="z-index:2;color:var(--text)"></i>
+</button>
+
+<!-- AOS -->
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>AOS.init({ duration:700, once:true, easing:'cubic-bezier(.2,.9,.2,1)' });</script>
+
+<!-- header scroll + skill animation + scroll btn -->
+<script>
+(function(){
+  const header = document.getElementById('siteHeader');
+  const scrollBtn = document.getElementById('scrollTopBtn');
+
+  function onScroll(){
+    if(window.scrollY > 80) header.classList.add('solid'); else header.classList.remove('solid');
+    scrollBtn.classList.toggle('visible', window.scrollY > 360);
+
+    // animate skill bars
+    document.querySelectorAll('.bar').forEach(bar=>{
+      const rect = bar.getBoundingClientRect();
+      if(rect.top < window.innerHeight - 80){
+        const child = bar.querySelector('i');
+        if(child && !child.dataset.animated){
+          child.dataset.animated = '1';
+          // widths already set inline; reapply to animate
+          const w = child.style.width || '0%';
+          setTimeout(()=> child.style.width = w, 80);
+        }
+      }
+    });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('load', onScroll);
+
+  scrollBtn.addEventListener('click', ()=> window.scrollTo({ top:0, behavior:'smooth' }));
+})();
+</script>
+
+<!-- soft particle layer -->
+<script>
+(function(){
+  const c = document.getElementById('particleCanvas'), ctx = c.getContext('2d');
+  function resize(){ c.width = innerWidth; c.height = innerHeight; c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px'; }
+  window.addEventListener('resize', resize); resize();
+
+  const N = Math.max(18, Math.floor((innerWidth*innerHeight)/280000));
+  const particles = [];
+  for(let i=0;i<N;i++) particles.push({ x: Math.random()*innerWidth, y: Math.random()*innerHeight, r: Math.random()*1.2+0.4, vx:(Math.random()-0.5)*0.12, vy:(Math.random()-0.5)*0.12 });
+
+  function draw(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(const p of particles){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < -10) p.x = innerWidth + 10;
+      if(p.x > innerWidth + 10) p.x = -10;
+      if(p.y < -10) p.y = innerHeight + 10;
+      if(p.y > innerHeight + 10) p.y = -10;
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(190,210,230,0.03)';
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+<!-- very subtle slow mesh -->
+<script>
+(function(){
+  const canvas = document.getElementById('meshCanvas'), ctx = canvas.getContext('2d');
+  function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; canvas.style.width = innerWidth + 'px'; canvas.style.height = innerHeight + 'px'; }
+  window.addEventListener('resize', resize); resize();
+
+  const NODE_COUNT = 16;   // small = subtle
+  const MAX_DIST = 160;
+  const SPEED = 0.10;
+  const nodes = [];
+  const cols = [[120,220,255],[180,100,255],[255,80,180]];
+
+  for(let i=0;i<NODE_COUNT;i++){
+    nodes.push({ x: Math.random()*innerWidth, y: Math.random()*innerHeight, vx: (Math.random()-0.5)*SPEED, vy: (Math.random()-0.5)*SPEED, r: 1 + Math.random()*2 });
+  }
+
+  function update(){
+    for(const n of nodes){
+      n.x += n.vx; n.y += n.vy;
+      if(n.x < -20) n.x = innerWidth + 20;
+      if(n.x > innerWidth + 20) n.x = -20;
+      if(n.y < -20) n.y = innerHeight + 20;
+      if(n.y > innerHeight + 20) n.y = -20;
+      n.vx += (Math.random()-0.5) * 0.0015; n.vy += (Math.random()-0.5) * 0.0015;
+      n.vx *= 0.996; n.vy *= 0.996;
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(let i=0;i<nodes.length;i++){
+      const a = nodes[i];
+      let con=0;
+      for(let j=i+1;j<nodes.length && con < 3;j++){
+        const b = nodes[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.hypot(dx,dy);
+        if(dist < MAX_DIST){
+          con++;
+          const alpha = 0.05 * (1 - dist/MAX_DIST);
+          const c1 = cols[i % cols.length], c2 = cols[j % cols.length];
+          const r = Math.floor((c1[0]+c2[0])/2), g = Math.floor((c1[1]+c2[1])/2), bcol = Math.floor((c1[2]+c2[2])/2);
+          ctx.strokeStyle = `rgba(${r},${g},${bcol},${alpha})`;
+          ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+    }
+    // tiny nodes
+    for(const n of nodes){
+      ctx.fillStyle = 'rgba(180,200,220,0.06)';
+      ctx.beginPath(); ctx.arc(n.x, n.y, 1.6, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  function loop(){ update(); draw(); requestAnimationFrame(loop); }
+  loop();
+})();
+</script>
+
+</body>
+</html>
